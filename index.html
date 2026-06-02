@@ -3,13 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Past Present Future Reveal</title>
 
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
 <style>
-
 *{
     margin:0;
     padding:0;
@@ -22,38 +20,36 @@ body{
     display:flex;
     justify-content:center;
     align-items:center;
-    padding:20px;
-    background:linear-gradient(
-        135deg,
-        #0f172a,
-        #312e81,
-        #1e1b4b
-    );
+    padding:15px;
+    background:linear-gradient(135deg,#0f172a,#312e81,#1e1b4b);
 }
 
 .container{
     width:100%;
+    max-width:900px;
     text-align:center;
 }
 
 .title{
     color:white;
-    font-size:clamp(2rem,5vw,3.5rem);
+    font-size:clamp(1.6rem,6vw,3.5rem);
     margin-bottom:10px;
+    line-height:1.2;
 }
 
 .subtitle{
     color:#d1d5db;
-    margin-bottom:25px;
+    margin-bottom:20px;
+    font-size:clamp(.9rem,3vw,1.1rem);
 }
 
 .card{
     position:relative;
-    width:min(750px,92vw);
-    height:min(450px,70vh);
-    min-height:360px;
+    width:min(750px,95vw);
+    height:min(500px,70vh);
+    min-height:320px;
     margin:auto;
-    border-radius:25px;
+    border-radius:20px;
     overflow:hidden;
     box-shadow:0 20px 60px rgba(0,0,0,.5);
 }
@@ -61,494 +57,269 @@ body{
 .reveal{
     width:100%;
     height:100%;
+    padding:20px;
     display:flex;
     flex-direction:column;
     justify-content:center;
     align-items:center;
-    background:linear-gradient(
-        135deg,
-        #ff758c,
-        #ff7eb3
-    );
+    text-align:center;
+    background:linear-gradient(135deg,#ff758c,#ff7eb3);
     color:white;
 }
 
 .reveal img{
-    width:220px;
-    height:220px;
+    width:min(40vw,220px);
+    height:min(40vw,220px);
+    min-width:120px;
+    min-height:120px;
     border-radius:50%;
     object-fit:cover;
-    border:8px solid white;
-    margin-bottom:20px;
-    box-shadow:0 10px 25px rgba(0,0,0,.3);
+    border:6px solid white;
+    margin-bottom:15px;
 }
 
 .reveal h2{
-    margin-bottom:15px;
-    font-size:2rem;
+    font-size:clamp(1.3rem,5vw,2rem);
+    margin-bottom:12px;
 }
 
 .reveal p{
-    font-size:1.2rem;
-    line-height:2;
+    font-size:clamp(.95rem,3.5vw,1.2rem);
+    line-height:1.8;
 }
 
 canvas{
     position:absolute;
     inset:0;
     cursor:pointer;
+    touch-action:none;
 }
 
 .overlay{
     position:absolute;
     inset:0;
     z-index:10;
-
     display:flex;
     flex-direction:column;
     justify-content:center;
     align-items:center;
-
     text-align:center;
-
+    padding:20px;
     background:#111827;
     color:white;
-
-    padding:20px;
 }
 
 .overlay h2{
+    font-size:clamp(1.2rem,5vw,2rem);
     margin-bottom:15px;
 }
 
+.overlay p{
+    font-size:clamp(.9rem,3vw,1.1rem);
+}
+
 .overlay img{
-    width:180px;
-    height:180px;
+    width:min(35vw,180px);
+    height:min(35vw,180px);
+    min-width:110px;
+    min-height:110px;
     object-fit:cover;
     border-radius:50%;
     border:5px solid white;
-    margin-top:20px;
+    margin-top:15px;
 }
 
-@media(max-width:768px){
-
+@media (max-width:480px){
+    body{padding:10px;}
     .card{
-        width:95vw;
-        height:65vh;
+        width:96vw;
+        height:60vh;
+        min-height:300px;
     }
-
-    .reveal img{
-        width:150px;
-        height:150px;
-    }
-
-    .overlay img{
-        width:140px;
-        height:140px;
-    }
-
-    .reveal h2{
-        font-size:1.5rem;
-    }
+    .reveal,.overlay{padding:15px;}
 }
-
 </style>
 </head>
-
 <body>
 
 <div class="container">
-
-    <h1 class="title">
-        🔮 Want To See My Past, Present & Future?
-    </h1>
-
-    <div class="subtitle">
-        Scratch the card and find out...
-    </div>
+    <h1 class="title">🔮 Want To See My Past, Present & Future?</h1>
+    <div class="subtitle">Scratch the card and find out...</div>
 
     <div class="card" id="card">
-
         <div class="reveal">
-
-            <img
-                id="finalImage"
-                src="girl1.png"
-                alt="Final Reveal"
-            >
-
-            <h2>
-                🎉 IT'S HER ❤️
-            </h2>
-
+            <img id="finalImage" src="girl1.png" alt="Final Reveal">
+            <h2>🎉 IT'S HER ❤️</h2>
             <p>
                 Past ➜ Her ❤️ <br>
                 Present ➜ Her ❤️ <br>
                 Future ➜ Her ❤️
             </p>
-
         </div>
 
         <canvas id="canvas"></canvas>
-
     </div>
-
 </div>
 
 <script>
-
 const FIRST_IMAGE = "girl1.png";
 const SECOND_IMAGE = "girl2.png";
 const FINAL_IMAGE = "her.jpg";
 
-const canvas =
-document.getElementById("canvas");
-
-const card =
-document.getElementById("card");
-
-const ctx =
-canvas.getContext("2d");
-
-canvas.width = card.clientWidth;
-canvas.height = card.clientHeight;
+const canvas = document.getElementById("canvas");
+const card = document.getElementById("card");
+const ctx = canvas.getContext("2d");
 
 let stage = 1;
 let done = false;
 let scratching = false;
 
-/* Draw Scratch Layer */
-
 function drawLayer(text){
+    ctx.globalCompositeOperation = "source-over";
 
-    ctx.globalCompositeOperation =
-        "source-over";
-
-    const gradient =
-        ctx.createLinearGradient(
-            0,
-            0,
-            canvas.width,
-            canvas.height
-        );
-
-    gradient.addColorStop(
-        0,
-        "#FFD700"
-    );
-
-    gradient.addColorStop(
-        0.5,
-        "#F4C430"
-    );
-
-    gradient.addColorStop(
-        1,
-        "#B8860B"
-    );
+    const gradient = ctx.createLinearGradient(0,0,canvas.width,canvas.height);
+    gradient.addColorStop(0,"#FFD700");
+    gradient.addColorStop(0.5,"#F4C430");
+    gradient.addColorStop(1,"#B8860B");
 
     ctx.fillStyle = gradient;
-
-    ctx.fillRect(
-        0,
-        0,
-        canvas.width,
-        canvas.height
-    );
+    ctx.fillRect(0,0,canvas.width,canvas.height);
 
     ctx.fillStyle = "white";
-
-    ctx.font = "bold 42px Arial";
-
+    ctx.font = `bold ${Math.max(24, canvas.width/15)}px Arial`;
     ctx.textAlign = "center";
 
-    ctx.fillText(
-        text,
-        canvas.width / 2,
-        canvas.height / 2
-    );
+    ctx.fillText(text, canvas.width/2, canvas.height/2);
 }
 
-drawLayer("Scratch Me ✨");
+function resizeCanvas(){
+    canvas.width = card.clientWidth;
+    canvas.height = card.clientHeight;
 
-/* Scratch */
+    if(!done){
+        if(stage === 1) drawLayer("Scratch Me ✨");
+        else if(stage === 2) drawLayer("Scratch Again ✨");
+        else drawLayer("Final Attempt 🔥");
+    }
+}
+
+resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
 
 function scratch(x,y){
-
-    ctx.globalCompositeOperation =
-        "destination-out";
-
+    ctx.globalCompositeOperation = "destination-out";
     ctx.beginPath();
-
-    ctx.arc(
-        x,
-        y,
-        30,
-        0,
-        Math.PI * 2
-    );
-
+    ctx.arc(x,y,30,0,Math.PI*2);
     ctx.fill();
-
     checkReveal();
 }
 
-/* Percentage Revealed */
-
 function revealedPercent(){
-
-    const pixels =
-        ctx.getImageData(
-            0,
-            0,
-            canvas.width,
-            canvas.height
-        ).data;
-
+    const pixels = ctx.getImageData(0,0,canvas.width,canvas.height).data;
     let transparent = 0;
 
-    for(
-        let i=3;
-        i<pixels.length;
-        i+=4
-    ){
-        if(
-            pixels[i]===0
-        ){
-            transparent++;
-        }
+    for(let i=3;i<pixels.length;i+=4){
+        if(pixels[i]===0) transparent++;
     }
-
-    return transparent /
-        (pixels.length / 4);
+    return transparent/(pixels.length/4);
 }
 
-/* Fake Reveal */
+function showSequence(title,imageUrl,nextText){
+    canvas.style.display="none";
 
-function showSequence(
-    title,
-    imageUrl,
-    nextText
-){
-
-    canvas.style.display =
-        "none";
-
-    const overlay =
-        document.createElement("div");
-
-    overlay.className =
-        "overlay";
-
-    overlay.innerHTML = `
-        <h2>
-            🔍 Analyzing...
-        </h2>
-
-        <p>
-            Checking Past, Present & Future...
-        </p>
+    const overlay=document.createElement("div");
+    overlay.className="overlay";
+    overlay.innerHTML=`
+        <h2>🔍 Analyzing...</h2>
+        <p>Checking Past, Present & Future...</p>
     `;
 
-    card.appendChild(
-        overlay
-    );
+    card.appendChild(overlay);
 
     setTimeout(()=>{
-
-        overlay.innerHTML = `
+        overlay.innerHTML=`
             <h2>${title}</h2>
-
             <img src="${imageUrl}">
-
-            <p style="margin-top:15px;">
-                Hmm... something seems off 🤔
-            </p>
+            <p style="margin-top:15px;">Hmm... something seems off 🤔</p>
         `;
 
         setTimeout(()=>{
-
             overlay.remove();
-
-            canvas.style.display =
-                "block";
-
-            drawLayer(
-                nextText
-            );
-
+            canvas.style.display="block";
+            drawLayer(nextText);
         },2500);
-
     },2500);
 }
 
-/* Final Reveal */
-
 function finalReveal(){
+    canvas.style.display="none";
 
-    canvas.style.display =
-        "none";
-
-    const overlay =
-        document.createElement(
-            "div"
-        );
-
-    overlay.className =
-        "overlay";
-
-    overlay.innerHTML = `
-        <h2>
-            ❤️ Matching Soulmate Records...
-        </h2>
-
-        <p>
-            Please wait...
-        </p>
+    const overlay=document.createElement("div");
+    overlay.className="overlay";
+    overlay.innerHTML=`
+        <h2>❤️ Matching Soulmate Records...</h2>
+        <p>Please wait...</p>
     `;
 
-    card.appendChild(
-        overlay
-    );
+    card.appendChild(overlay);
 
     setTimeout(()=>{
-
         overlay.remove();
 
-        document
-            .getElementById(
-                "finalImage"
-            )
-            .src = FINAL_IMAGE;
+        document.getElementById("finalImage").src=FINAL_IMAGE;
 
-        confetti({
-            particleCount:250,
-            spread:120,
-            origin:{y:0.6}
-        });
+        confetti({particleCount:250,spread:120,origin:{y:0.6}});
 
         setTimeout(()=>{
-            confetti({
-                particleCount:350,
-                spread:180
-            });
+            confetti({particleCount:350,spread:180});
         },400);
 
         setTimeout(()=>{
-            confetti({
-                particleCount:450,
-                spread:220
-            });
+            confetti({particleCount:450,spread:220});
         },900);
-
     },3000);
 }
 
-/* Reveal Logic */
-
 function checkReveal(){
+    if(done || revealedPercent() < 0.35) return;
 
-    if(
-        done ||
-        revealedPercent() < 0.35
-    ){
-        return;
-    }
-
-    if(stage === 1){
-
-        stage = 2;
-
-        showSequence(
-            "❌ Not Her",
-            FIRST_IMAGE,
-            "Scratch Again ✨"
-        );
-    }
-    else if(stage === 2){
-
-        stage = 3;
-
-        showSequence(
-            "❌ Still Not Her",
-            SECOND_IMAGE,
-            "Final Attempt 🔥"
-        );
-    }
-    else{
-
-        done = true;
-
+    if(stage===1){
+        stage=2;
+        showSequence("❌ Not Her",FIRST_IMAGE,"Scratch Again ✨");
+    }else if(stage===2){
+        stage=3;
+        showSequence("❌ Still Not Her",SECOND_IMAGE,"Final Attempt 🔥");
+    }else{
+        done=true;
         finalReveal();
     }
 }
 
-/* Mouse */
+canvas.addEventListener("mousedown",()=>scratching=true);
+canvas.addEventListener("mouseup",()=>scratching=false);
+canvas.addEventListener("mouseleave",()=>scratching=false);
 
-canvas.addEventListener(
-    "mousedown",
-    ()=> scratching = true
-);
+canvas.addEventListener("mousemove",(e)=>{
+    if(!scratching) return;
+    const rect=canvas.getBoundingClientRect();
+    scratch(e.clientX-rect.left,e.clientY-rect.top);
+});
 
-canvas.addEventListener(
-    "mouseup",
-    ()=> scratching = false
-);
+canvas.addEventListener("touchstart",()=>scratching=true);
+canvas.addEventListener("touchend",()=>scratching=false);
 
-canvas.addEventListener(
-    "mouseleave",
-    ()=> scratching = false
-);
+canvas.addEventListener("touchmove",(e)=>{
+    e.preventDefault();
+    if(!scratching) return;
 
-canvas.addEventListener(
-    "mousemove",
-    (e)=>{
+    const rect=canvas.getBoundingClientRect();
+    const touch=e.touches[0];
 
-        if(!scratching)
-            return;
-
-        const rect =
-            canvas.getBoundingClientRect();
-
-        scratch(
-            e.clientX - rect.left,
-            e.clientY - rect.top
-        );
-    }
-);
-
-/* Touch */
-
-canvas.addEventListener(
-    "touchstart",
-    ()=> scratching = true
-);
-
-canvas.addEventListener(
-    "touchend",
-    ()=> scratching = false
-);
-
-canvas.addEventListener(
-    "touchmove",
-    (e)=>{
-
-        if(!scratching)
-            return;
-
-        const rect =
-            canvas.getBoundingClientRect();
-
-        const touch =
-            e.touches[0];
-
-        scratch(
-            touch.clientX - rect.left,
-            touch.clientY - rect.top
-        );
-    }
-);
-
+    scratch(
+        touch.clientX-rect.left,
+        touch.clientY-rect.top
+    );
+},{passive:false});
 </script>
 
 </body>
