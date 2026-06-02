@@ -3,195 +3,553 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Past Present Future Reveal</title>
+
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI,sans-serif}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
+
 body{
-min-height:100vh;display:flex;justify-content:center;align-items:center;
-background:linear-gradient(135deg,#0f172a,#312e81);
-padding:20px;
-}
-.container{text-align:center}
-h1{color:#fff;margin-bottom:10px;font-size:3rem}
-.subtitle{color:#ddd;margin-bottom:25px}
-.card{
-position:relative;width:700px;max-width:95vw;height:430px;
-border-radius:24px;overflow:hidden;
-box-shadow:0 20px 60px rgba(0,0,0,.4);
-}
-.reveal{
-width:100%;height:100%;
-display:flex;flex-direction:column;justify-content:center;align-items:center;
-background:linear-gradient(135deg,#ff758c,#ff7eb3);
-color:white;
-}
-.reveal img{
-width:220px;height:220px;border-radius:50%;
-object-fit:cover;border:8px solid white;margin-bottom:20px;
-}
-canvas{position:absolute;inset:0;cursor:pointer}
-.fake{
-position:absolute;inset:0;display:flex;flex-direction:column;
-justify-content:center;align-items:center;
-background:#111827;color:white;z-index:5;
-animation:shake .6s;
-}
-.fake h2{font-size:3rem}
-.fake p{margin-top:10px;font-size:1.2rem}
-@keyframes shake{
-0%,100%{transform:translateX(0)}
-20%{transform:translateX(-10px)}
-40%{transform:translateX(10px)}
-60%{transform:translateX(-10px)}
-80%{transform:translateX(10px)}
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+    background:linear-gradient(
+        135deg,
+        #0f172a,
+        #312e81,
+        #1e1b4b
+    );
 }
 
 .container{
-width:100%;
-display:flex;
-flex-direction:column;
-align-items:center;
-justify-content:center;
+    width:100%;
+    text-align:center;
+}
+
+.title{
+    color:white;
+    font-size:clamp(2rem,5vw,3.5rem);
+    margin-bottom:10px;
+}
+
+.subtitle{
+    color:#d1d5db;
+    margin-bottom:25px;
 }
 
 .card{
-margin:0 auto;
+    position:relative;
+    width:min(750px,92vw);
+    height:min(450px,70vh);
+    min-height:360px;
+    margin:auto;
+    border-radius:25px;
+    overflow:hidden;
+    box-shadow:0 20px 60px rgba(0,0,0,.5);
 }
 
-@media (max-width:768px){
-h1{font-size:2rem;padding:0 10px;}
-.subtitle{padding:0 15px;}
-.card{
-width:92vw;
-height:60vh;
-min-height:340px;
-max-height:500px;
+.reveal{
+    width:100%;
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    background:linear-gradient(
+        135deg,
+        #ff758c,
+        #ff7eb3
+    );
+    color:white;
 }
+
 .reveal img{
-width:140px;
-height:140px;
+    width:220px;
+    height:220px;
+    border-radius:50%;
+    object-fit:cover;
+    border:8px solid white;
+    margin-bottom:20px;
+    box-shadow:0 10px 25px rgba(0,0,0,.3);
 }
-.fake h2{
-font-size:2rem;
-text-align:center;
-padding:0 10px;
+
+.reveal h2{
+    margin-bottom:15px;
+    font-size:2rem;
 }
+
+.reveal p{
+    font-size:1.2rem;
+    line-height:2;
 }
+
+canvas{
+    position:absolute;
+    inset:0;
+    cursor:pointer;
+}
+
+.overlay{
+    position:absolute;
+    inset:0;
+    z-index:10;
+
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+
+    text-align:center;
+
+    background:#111827;
+    color:white;
+
+    padding:20px;
+}
+
+.overlay h2{
+    margin-bottom:15px;
+}
+
+.overlay img{
+    width:180px;
+    height:180px;
+    object-fit:cover;
+    border-radius:50%;
+    border:5px solid white;
+    margin-top:20px;
+}
+
+@media(max-width:768px){
+
+    .card{
+        width:95vw;
+        height:65vh;
+    }
+
+    .reveal img{
+        width:150px;
+        height:150px;
+    }
+
+    .overlay img{
+        width:140px;
+        height:140px;
+    }
+
+    .reveal h2{
+        font-size:1.5rem;
+    }
+}
+
 </style>
 </head>
-<body>
-<div class="container">
-<h1>🔮 Want To See My Past, Present & Future?</h1>
-<div class="subtitle">Scratch the card to reveal the secret ✨</div>
 
-<div class="card" id="card">
-<div class="reveal">
-<img src="her.jpg" alt="Replace with your image">
-<h2>🎉 IT'S HER ❤️</h2>
-<p>Past ➜ Her ❤️<br>Present ➜ Her ❤️<br>Future ➜ Her ❤️</p>
-</div>
-<canvas id="canvas"></canvas>
-</div>
+<body>
+
+<div class="container">
+
+    <h1 class="title">
+        🔮 Want To See My Past, Present & Future?
+    </h1>
+
+    <div class="subtitle">
+        Scratch the card and find out...
+    </div>
+
+    <div class="card" id="card">
+
+        <div class="reveal">
+
+            <img
+                id="finalImage"
+                src="girl1.png"
+                alt="Final Reveal"
+            >
+
+            <h2>
+                🎉 IT'S HER ❤️
+            </h2>
+
+            <p>
+                Past ➜ Her ❤️ <br>
+                Present ➜ Her ❤️ <br>
+                Future ➜ Her ❤️
+            </p>
+
+        </div>
+
+        <canvas id="canvas"></canvas>
+
+    </div>
+
 </div>
 
 <script>
-const canvas=document.getElementById('canvas');
-const card=document.getElementById('card');
-const ctx=canvas.getContext('2d');
 
-canvas.width=card.clientWidth;
-canvas.height=card.clientHeight;
+const FIRST_IMAGE = "girl1.png";
+const SECOND_IMAGE = "girl2.png";
+const FINAL_IMAGE = "her.jpg";
 
-let stage=1;
-let done=false;
-let drawing=false;
+const canvas =
+document.getElementById("canvas");
+
+const card =
+document.getElementById("card");
+
+const ctx =
+canvas.getContext("2d");
+
+canvas.width = card.clientWidth;
+canvas.height = card.clientHeight;
+
+let stage = 1;
+let done = false;
+let scratching = false;
+
+/* Draw Scratch Layer */
 
 function drawLayer(text){
-ctx.globalCompositeOperation='source-over';
-let g=ctx.createLinearGradient(0,0,canvas.width,canvas.height);
-g.addColorStop(0,'#FFD700');
-g.addColorStop(.5,'#F4C430');
-g.addColorStop(1,'#B8860B');
-ctx.fillStyle=g;
-ctx.fillRect(0,0,canvas.width,canvas.height);
 
-ctx.fillStyle='white';
-ctx.textAlign='center';
-ctx.font='bold 42px Arial';
-ctx.fillText(text,canvas.width/2,canvas.height/2);
+    ctx.globalCompositeOperation =
+        "source-over";
+
+    const gradient =
+        ctx.createLinearGradient(
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+
+    gradient.addColorStop(
+        0,
+        "#FFD700"
+    );
+
+    gradient.addColorStop(
+        0.5,
+        "#F4C430"
+    );
+
+    gradient.addColorStop(
+        1,
+        "#B8860B"
+    );
+
+    ctx.fillStyle = gradient;
+
+    ctx.fillRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+    ctx.fillStyle = "white";
+
+    ctx.font = "bold 42px Arial";
+
+    ctx.textAlign = "center";
+
+    ctx.fillText(
+        text,
+        canvas.width / 2,
+        canvas.height / 2
+    );
 }
 
-drawLayer('Scratch Me ✨');
+drawLayer("Scratch Me ✨");
+
+/* Scratch */
 
 function scratch(x,y){
-ctx.globalCompositeOperation='destination-out';
-ctx.beginPath();
-ctx.arc(x,y,30,0,Math.PI*2);
-ctx.fill();
-check();
+
+    ctx.globalCompositeOperation =
+        "destination-out";
+
+    ctx.beginPath();
+
+    ctx.arc(
+        x,
+        y,
+        30,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fill();
+
+    checkReveal();
 }
 
-function percentRevealed(){
-const data=ctx.getImageData(0,0,canvas.width,canvas.height).data;
-let t=0;
-for(let i=3;i<data.length;i+=4){
-if(data[i]===0)t++;
-}
-return t/(data.length/4);
-}
+/* Percentage Revealed */
 
-function fake(title,msg,nextText){
-canvas.style.display='none';
-const div=document.createElement('div');
-div.className='fake';
-div.innerHTML=`<h2>${title}</h2><p>${msg}</p>`;
-card.appendChild(div);
+function revealedPercent(){
 
-setTimeout(()=>{
-div.remove();
-canvas.style.display='block';
-drawLayer(nextText);
-},2200);
-}
+    const pixels =
+        ctx.getImageData(
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        ).data;
 
-function check(){
-if(percentRevealed()<0.35 || done) return;
+    let transparent = 0;
 
-if(stage===1){
-stage=2;
-fake('❌ Not Her','Try Again 😏','Scratch Again ✨');
-}
-else if(stage===2){
-stage=3;
-fake('❌ Still Not Her','One Last Chance 😂','Final Attempt 🔥');
-}
-else{
-done=true;
-canvas.style.display='none';
+    for(
+        let i=3;
+        i<pixels.length;
+        i+=4
+    ){
+        if(
+            pixels[i]===0
+        ){
+            transparent++;
+        }
+    }
 
-confetti({particleCount:250,spread:120,origin:{y:0.6}});
-setTimeout(()=>confetti({particleCount:300,spread:180}),400);
-setTimeout(()=>confetti({particleCount:400,spread:250}),800);
-}
+    return transparent /
+        (pixels.length / 4);
 }
 
-canvas.addEventListener('mousedown',()=>drawing=true);
-canvas.addEventListener('mouseup',()=>drawing=false);
-canvas.addEventListener('mousemove',e=>{
-if(!drawing)return;
-const r=canvas.getBoundingClientRect();
-scratch(e.clientX-r.left,e.clientY-r.top);
-});
+/* Fake Reveal */
 
-canvas.addEventListener('touchstart',()=>drawing=true);
-canvas.addEventListener('touchend',()=>drawing=false);
-canvas.addEventListener('touchmove',e=>{
-if(!drawing)return;
-const r=canvas.getBoundingClientRect();
-const t=e.touches[0];
-scratch(t.clientX-r.left,t.clientY-r.top);
-});
+function showSequence(
+    title,
+    imageUrl,
+    nextText
+){
+
+    canvas.style.display =
+        "none";
+
+    const overlay =
+        document.createElement("div");
+
+    overlay.className =
+        "overlay";
+
+    overlay.innerHTML = `
+        <h2>
+            🔍 Analyzing...
+        </h2>
+
+        <p>
+            Checking Past, Present & Future...
+        </p>
+    `;
+
+    card.appendChild(
+        overlay
+    );
+
+    setTimeout(()=>{
+
+        overlay.innerHTML = `
+            <h2>${title}</h2>
+
+            <img src="${imageUrl}">
+
+            <p style="margin-top:15px;">
+                Hmm... something seems off 🤔
+            </p>
+        `;
+
+        setTimeout(()=>{
+
+            overlay.remove();
+
+            canvas.style.display =
+                "block";
+
+            drawLayer(
+                nextText
+            );
+
+        },2500);
+
+    },2500);
+}
+
+/* Final Reveal */
+
+function finalReveal(){
+
+    canvas.style.display =
+        "none";
+
+    const overlay =
+        document.createElement(
+            "div"
+        );
+
+    overlay.className =
+        "overlay";
+
+    overlay.innerHTML = `
+        <h2>
+            ❤️ Matching Soulmate Records...
+        </h2>
+
+        <p>
+            Please wait...
+        </p>
+    `;
+
+    card.appendChild(
+        overlay
+    );
+
+    setTimeout(()=>{
+
+        overlay.remove();
+
+        document
+            .getElementById(
+                "finalImage"
+            )
+            .src = FINAL_IMAGE;
+
+        confetti({
+            particleCount:250,
+            spread:120,
+            origin:{y:0.6}
+        });
+
+        setTimeout(()=>{
+            confetti({
+                particleCount:350,
+                spread:180
+            });
+        },400);
+
+        setTimeout(()=>{
+            confetti({
+                particleCount:450,
+                spread:220
+            });
+        },900);
+
+    },3000);
+}
+
+/* Reveal Logic */
+
+function checkReveal(){
+
+    if(
+        done ||
+        revealedPercent() < 0.35
+    ){
+        return;
+    }
+
+    if(stage === 1){
+
+        stage = 2;
+
+        showSequence(
+            "❌ Not Her",
+            FIRST_IMAGE,
+            "Scratch Again ✨"
+        );
+    }
+    else if(stage === 2){
+
+        stage = 3;
+
+        showSequence(
+            "❌ Still Not Her",
+            SECOND_IMAGE,
+            "Final Attempt 🔥"
+        );
+    }
+    else{
+
+        done = true;
+
+        finalReveal();
+    }
+}
+
+/* Mouse */
+
+canvas.addEventListener(
+    "mousedown",
+    ()=> scratching = true
+);
+
+canvas.addEventListener(
+    "mouseup",
+    ()=> scratching = false
+);
+
+canvas.addEventListener(
+    "mouseleave",
+    ()=> scratching = false
+);
+
+canvas.addEventListener(
+    "mousemove",
+    (e)=>{
+
+        if(!scratching)
+            return;
+
+        const rect =
+            canvas.getBoundingClientRect();
+
+        scratch(
+            e.clientX - rect.left,
+            e.clientY - rect.top
+        );
+    }
+);
+
+/* Touch */
+
+canvas.addEventListener(
+    "touchstart",
+    ()=> scratching = true
+);
+
+canvas.addEventListener(
+    "touchend",
+    ()=> scratching = false
+);
+
+canvas.addEventListener(
+    "touchmove",
+    (e)=>{
+
+        if(!scratching)
+            return;
+
+        const rect =
+            canvas.getBoundingClientRect();
+
+        const touch =
+            e.touches[0];
+
+        scratch(
+            touch.clientX - rect.left,
+            touch.clientY - rect.top
+        );
+    }
+);
+
 </script>
+
 </body>
 </html>
