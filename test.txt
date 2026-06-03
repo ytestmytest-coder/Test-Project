@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Premium Scratch Card Reveal</title>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
+
+body{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    overflow:hidden;
+    padding:15px;
+    background:linear-gradient(135deg,#0f172a,#312e81,#1e1b4b);
+}
+
+.container{
+    width:100%;
+    max-width:900px;
+    text-align:center;
+    z-index:2;
+}
+
+.title{
+    color:white;
+    font-size:clamp(1.8rem,6vw,3.5rem);
+    margin-bottom:10px;
+}
+
+.subtitle{
+    color:#d1d5db;
+    margin-bottom:15px;
+}
+
+.stats{
+    color:white;
+    margin-bottom:15px;
+    font-size:14px;
+}
+
+.progress-container{
+    width:90%;
+    height:12px;
+    margin:auto;
+    background:#374151;
+    border-radius:50px;
+    overflow:hidden;
+    margin-bottom:15px;
+}
+
+.progress-bar{
+    width:0%;
+    height:100%;
+    background:linear-gradient(90deg,#facc15,#fb7185);
+    transition:.2s;
+}
+
+.card{
+    position:relative;
+    width:min(95vw,750px);
+    height:min(70vh,500px);
+    min-height:320px;
+    margin:auto;
+    border-radius:25px;
+    overflow:hidden;
+    box-shadow:0 20px 60px rgba(0,0,0,.5);
+    animation:cardEntry 1s ease;
+}
+
+@keyframes cardEntry{
+    from{
+        opacity:0;
+        transform:scale(.8) rotate(-5deg);
+    }
+    to{
+        opacity:1;
+        transform:scale(1) rotate(0);
+    }
+}
+
+.reveal{
+    width:100%;
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    background:linear-gradient(135deg,#ff758c,#ff7eb3);
+    color:white;
+    padding:20px;
+}
+
+.reveal img{
+    width:min(40vw,220px);
+    height:min(40vw,220px);
+    border-radius:50%;
+    object-fit:cover;
+    border:6px solid white;
+    margin-bottom:15px;
+}
+
+.reveal p{
+    line-height:1.8;
+}
+
+canvas{
+    position:absolute;
+    inset:0;
+    touch-action:none;
+}
+
+.overlay{
+    position:absolute;
+    inset:0;
+    z-index:100;
+    background:#111827;
+    color:white;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    padding:20px;
+}
+
+.overlay img{
+    width:180px;
+    height:180px;
+    border-radius:50%;
+    object-fit:cover;
+    border:5px solid white;
+    margin:15px 0;
+}
+
+.heart{
+    position:fixed;
+    font-size:24px;
+    pointer-events:none;
+    animation:floatHeart 8s linear infinite;
+}
+
+.heart1{left:10%;}
+.heart2{left:50%;animation-delay:2s;}
+.heart3{left:80%;animation-delay:4s;}
+
+@keyframes floatHeart{
+    from{
+        bottom:-50px;
+        opacity:0;
+    }
+    20%{
+        opacity:1;
+    }
+    to{
+        bottom:110vh;
+        opacity:0;
+    }
+}
+
+@media(max-width:480px){
+
+    .card{
+        width:96vw;
+        height:60vh;
+    }
+
+    .heart{
+        font-size:18px;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="heart heart1">❤️</div>
+<div class="heart heart2">❤️</div>
+<div class="heart heart3">❤️</div>
+
+<div class="container">
+
+    <h1 class="title">
+        🔮 Want To See My Past, Present & Future?
+    </h1>
+
+    <div class="subtitle">
+        Scratch the card and find out...
+    </div>
+
+    <div class="stats" id="stats">
+        Clicks: 0 | Scratches: 0
+    </div>
+
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <div class="card" id="card">
+
+        <div class="reveal">
+
+            <img
+                id="finalImage"
+                src="girl1.png"
+                alt=""
+            >
+
+            <h2>🎉 IT'S HER ❤️</h2>
+
+            <p>
+                Past ➜ Her ❤️ <br>
+                Present ➜ Her ❤️ <br>
+                Future ➜ Her ❤️
+            </p>
+
+        </div>
+
+        <canvas id="canvas"></canvas>
+
+    </div>
+
+</div>
+
+<script>
+
+const FIRST_IMAGE="girl1.png";
+const SECOND_IMAGE="girl2.png";
+const FINAL_IMAGE="her.jpg";
+
+const card=document.getElementById("card");
+const canvas=document.getElementById("canvas");
+const ctx=canvas.getContext("2d");
+
+let stage=1;
+let done=false;
+let scratching=false;
+let stageLocked=false;
+
+let scratchCount=0;
+let totalClicks=0;
+let totalScratches=0;
+
+const MOBILE=window.innerWidth<768;
+
+const SCRATCH_RADIUS=MOBILE?18:30;
+const REQUIRED_SCRATCHES=MOBILE?120:80;
+const REQUIRED_PERCENT=MOBILE?0.55:0.40;
+
+function resizeCanvas(){
+
+    canvas.width=card.clientWidth;
+    canvas.height=card.clientHeight;
+
+    if(!done){
+
+        if(stage===1){
+            drawLayer("Scratch Me ✨");
+        }
+        else if(stage===2){
+            drawLayer("Scratch Again ✨");
+        }
+        else{
+            drawLayer("Final Attempt 🔥");
+        }
+    }
+}
+
+window.addEventListener(
+    "resize",
+    resizeCanvas
+);
+
+function drawLayer(text){
+
+    ctx.globalCompositeOperation="source-over";
+
+    const gradient=
+        ctx.createLinearGradient(
+            0,0,
+            canvas.width,
+            canvas.height
+        );
+
+    gradient.addColorStop(
+        0,
+        "#FFD700"
+    );
+
+    gradient.addColorStop(
+        .5,
+        "#F4C430"
+    );
+
+    gradient.addColorStop(
+        1,
+        "#B8860B"
+    );
+
+    ctx.fillStyle=gradient;
+
+    ctx.fillRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+    ctx.fillStyle="white";
+    ctx.textAlign="center";
+
+    ctx.font=
+        `bold ${
+            Math.max(
+                24,
+                canvas.width/15
+            )
+        }px Arial`;
+
+    ctx.fillText(
+        text,
+        canvas.width/2,
+        canvas.height/2
+    );
+}
+
+resizeCanvas();
+
+function updateStats(){
+
+    document.getElementById(
+        "stats"
+    ).innerHTML=
+
+        `Clicks: ${totalClicks}
+        | Scratches: ${totalScratches}`;
+
+    const percent=
+        Math.min(
+            scratchCount/
+            REQUIRED_SCRATCHES,
+            1
+        );
+
+    document
+        .getElementById(
+            "progressBar"
+        )
+        .style.width=
+
+        (percent*100)+"%";
+}
+
+function scratch(x,y){
+
+    ctx.globalCompositeOperation=
+        "destination-out";
+
+    ctx.beginPath();
+
+    ctx.arc(
+        x,
+        y,
+        SCRATCH_RADIUS,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+    scratchCount++;
+    totalScratches++;
+
+    updateStats();
+
+    if(Math.random()<0.05){
+
+        confetti({
+            particleCount:2,
+            spread:35,
+            startVelocity:12,
+            origin:{
+                x:x/canvas.width,
+                y:y/canvas.height
+            }
+        });
+    }
+
+    checkReveal();
+}
+
+function revealedPercent(){
+
+    const pixels=
+        ctx.getImageData(
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        ).data;
+
+    let transparent=0;
+
+    for(
+        let i=3;
+        i<pixels.length;
+        i+=4
+    ){
+
+        if(pixels[i]===0){
+            transparent++;
+        }
+    }
+
+    return transparent/
+        (pixels.length/4);
+}
+
+function checkReveal(){
+
+    if(done||stageLocked){
+        return;
+    }
+
+    if(
+        scratchCount<
+        REQUIRED_SCRATCHES
+    ){
+        return;
+    }
+
+    if(
+        revealedPercent()<
+        REQUIRED_PERCENT
+    ){
+        return;
+    }
+
+    stageLocked=true;
+
+    if(stage===1){
+
+        stage=2;
+
+        showSequence(
+            "❌ Not Her",
+            FIRST_IMAGE,
+            "Scratch Again ✨"
+        );
+    }
+    else if(stage===2){
+
+        stage=3;
+
+        showSequence(
+            "❌ Still Not Her",
+            SECOND_IMAGE,
+            "Final Attempt 🔥"
+        );
+    }
+    else{
+
+        done=true;
+
+        finalReveal();
+    }
+}
+
+function showSequence(
+    title,
+    imageUrl,
+    nextText
+){
+
+    canvas.style.display="none";
+
+    const overlay=
+        document.createElement(
+            "div"
+        );
+
+    overlay.className=
+        "overlay";
+
+    overlay.innerHTML=`
+        <h2>🔍 Analyzing...</h2>
+        <p>Checking records...</p>
+    `;
+
+    card.appendChild(
+        overlay
+    );
+
+    setTimeout(()=>{
+
+        overlay.innerHTML=`
+            <h2>${title}</h2>
+            <img src="${imageUrl}">
+            <p>
+                Hmm...
+                something seems off 🤔
+            </p>
+        `;
+
+        setTimeout(()=>{
+
+            overlay.remove();
+
+            scratchCount=0;
+
+            stageLocked=false;
+
+            document
+                .getElementById(
+                    "progressBar"
+                )
+                .style.width="0%";
+
+            canvas.style.display=
+                "block";
+
+            drawLayer(
+                nextText
+            );
+
+        },2500);
+
+    },2000);
+}
+
+function finalReveal(){
+
+    canvas.style.display="none";
+
+    const match=
+        Math.floor(
+            95+
+            Math.random()*5
+        );
+
+    const overlay=
+        document.createElement(
+            "div"
+        );
+
+    overlay.className=
+        "overlay";
+
+    overlay.innerHTML=`
+        <h2>❤️ Soulmate Found ❤️</h2>
+
+        <h1
+            style="
+                font-size:60px;
+                margin:15px 0;
+            "
+        >
+            ${match}%
+        </h1>
+
+        <p>
+            Perfect Match
+        </p>
+    `;
+
+    card.appendChild(
+        overlay
+    );
+
+    setTimeout(()=>{
+
+        overlay.remove();
+
+        const img=
+            document.getElementById(
+                "finalImage"
+            );
+
+        img.style.transform=
+            "scale(0)";
+
+        img.src=
+            FINAL_IMAGE;
+
+        setTimeout(()=>{
+
+            img.style.transition=
+                "all .8s ease";
+
+            img.style.transform=
+                "scale(1.15)";
+
+        },100);
+
+        confetti({
+            particleCount:300,
+            spread:180
+        });
+
+        setTimeout(()=>{
+
+            confetti({
+                particleCount:400,
+                spread:220
+            });
+
+        },500);
+
+    },3000);
+}
+
+canvas.addEventListener(
+    "mousedown",
+    ()=>{
+
+        scratching=true;
+
+        totalClicks++;
+
+        updateStats();
+    }
+);
+
+canvas.addEventListener(
+    "mouseup",
+    ()=> scratching=false
+);
+
+canvas.addEventListener(
+    "mouseleave",
+    ()=> scratching=false
+);
+
+canvas.addEventListener(
+    "mousemove",
+    e=>{
+
+        if(!scratching){
+            return;
+        }
+
+        const rect=
+            canvas.getBoundingClientRect();
+
+        scratch(
+            e.clientX-rect.left,
+            e.clientY-rect.top
+        );
+    }
+);
+
+canvas.addEventListener(
+    "touchstart",
+    e=>{
+
+        e.preventDefault();
+
+        scratching=true;
+
+        totalClicks++;
+
+        updateStats();
+
+    },
+    {passive:false}
+);
+
+canvas.addEventListener(
+    "touchend",
+    ()=>{
+
+        scratching=false;
+
+    },
+    {passive:false}
+);
+
+canvas.addEventListener(
+    "touchmove",
+    e=>{
+
+        e.preventDefault();
+
+        if(!scratching){
+            return;
+        }
+
+        const rect=
+            canvas.getBoundingClientRect();
+
+        const touch=
+            e.touches[0];
+
+        scratch(
+            touch.clientX-rect.left,
+            touch.clientY-rect.top
+        );
+
+    },
+    {passive:false}
+);
+
+</script>
+
+</body>
+</html>
