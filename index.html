@@ -1,296 +1,390 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sorry ❤️</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Premium Mobile Scratch Card</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Segoe UI, sans-serif
+        }
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 12px;
+            background: linear-gradient(135deg, #0f172a, #312e81, #1e1b4b);
+            overflow: hidden
+        }
 
-<style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:'Poppins',sans-serif;
-}
+        .container {
+            width: 100%;
+            max-width: 900px;
+            text-align: center
+        }
 
-body{
-    min-height:100vh;
-    overflow:hidden;
+        .title {
+            color: #fff;
+            font-size: clamp(1.6rem, 6vw, 3.2rem);
+            margin-bottom: 8px
+        }
+
+        .subtitle,
+        .stats {
+            color: #d1d5db;
+            margin-bottom: 12px
+        }
+
+        .progress {
+            width: 90%;
+            height: 10px;
+            background: #374151;
+            border-radius: 20px;
+            margin: 0 auto 12px;
+            overflow: hidden
+        }
+
+        .bar {
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, #facc15, #fb7185);
+            transition: .2s
+        }
+
+        .card {
+            position: relative;
+            width: min(95vw, 750px);
+            height: min(70vh, 520px);
+            min-height: 320px;
+            margin: auto;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, .5)
+        }
+
+        
+        .reveal{
+
+    width:100%;
+    height:100%;
+
     display:flex;
+    flex-direction:column;
+
     justify-content:center;
     align-items:center;
-    background:linear-gradient(-45deg,#ff758c,#ff7eb3,#ff9a9e,#ffd6e0);
-    background-size:400% 400%;
-    animation:bg 12s ease infinite;
-}
 
-@keyframes bg{
-    0%{background-position:0% 50%;}
-    50%{background-position:100% 50%;}
-    100%{background-position:0% 50%;}
-}
-
-.card{
-    width:90%;
-    max-width:650px;
-    padding:40px;
-    border-radius:30px;
-    text-align:center;
-    background:rgba(255,255,255,.15);
-    backdrop-filter:blur(20px);
-    border:1px solid rgba(255,255,255,.3);
-    box-shadow:0 20px 50px rgba(0,0,0,.15);
-    animation:float 4s ease-in-out infinite;
-    z-index:10;
-}
-
-@keyframes float{
-    0%,100%{transform:translateY(0);}
-    50%{transform:translateY(-12px);}
-}
-
-h1{
-    color:white;
-    font-size:4rem;
-    text-shadow:0 0 20px rgba(255,255,255,.7);
-}
-
-.message{
-    color:white;
-    margin-top:20px;
-    line-height:1.8;
-    min-height:90px;
-    font-size:1.15rem;
-}
-
-.buttons{
-    margin-top:30px;
-    display:flex;
-    justify-content:center;
-    gap:15px;
-    flex-wrap:wrap;
-}
-
-button{
-    border:none;
-    border-radius:50px;
-    padding:15px 28px;
-    cursor:pointer;
-    font-size:17px;
-    font-weight:600;
-    transition:.3s;
-}
-
-#forgiveBtn{
-    background:white;
-    color:#ff4f7b;
-}
-
-#forgiveBtn:hover{
-    transform:scale(1.08);
-}
-
-#noBtn{
-    background:#ff4f7b;
-    color:white;
     position:relative;
-}
 
-.heart{
-    position:absolute;
+    overflow:hidden;
+
     color:white;
-    animation:rise linear infinite;
-    opacity:.7;
-    pointer-events:none;
+
+    background:
+    linear-gradient(
+        -45deg,
+        #ff4d6d,
+        #ff758f,
+        #ff9eb5,
+        #ffd6e0
+    );
+
+    background-size:
+        400% 400%;
+
+    animation:
+        gradientMove
+        8s ease infinite;
 }
 
-@keyframes rise{
-    from{
-        transform:translateY(100vh);
-        opacity:0;
-    }
-    20%{
-        opacity:1;
-    }
-    to{
-        transform:translateY(-100px);
-        opacity:0;
-    }
-}
+        .heart {
 
-.fade{
-    animation:fadeIn 1s ease forwards;
-}
+            position: fixed;
 
-@keyframes fadeIn{
-    from{
-        opacity:0;
-        transform:translateY(20px);
-    }
-    to{
-        opacity:1;
-        transform:translateY(0);
-    }
-}
+            font-size: 35px;
 
-.bigHeart{
-    font-size:100px;
-    animation:heartbeat 1.8s infinite;
-}
+            animation:
+                floatUp 15s linear infinite,
+                heartbeat 1.2s infinite;
+        }
 
-@keyframes heartbeat{
-    0%,100%{
-        transform:scale(1);
-    }
-    50%{
-        transform:scale(1.15);
-    }
-}
-</style>
+
+        .reveal img {
+            width: min(42vw, 220px);
+            height: min(42vw, 220px);
+            border-radius: 50%;
+            object-fit: cover;
+            border: 6px solid #fff
+        }
+
+        canvas {
+            position: absolute;
+            inset: 0;
+            touch-action: none
+        }
+
+        .overlay {
+            position: absolute;
+            inset: 0;
+            background: #111827;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10
+        }
+
+        .overlay img {
+            width: 170px;
+            height: 170px;
+            border-radius: 50%;
+            border: 5px solid #fff;
+            object-fit: cover
+        }
+
+        .heart {
+            position: fixed;
+            font-size: 18px;
+            opacity: .35;
+            animation: float 12s linear infinite;
+            pointer-events: none
+        }
+
+        .h1 {
+            left: 10%
+        }
+
+        .h2 {
+            left: 50%;
+            animation-delay: 4s
+        }
+
+        .h3 {
+            left: 80%;
+            animation-delay: 8s
+        }
+
+        @keyframes float {
+            from {
+                bottom: -30px
+            }
+
+            to {
+                bottom: 105vh
+            }
+        }
+
+        @keyframes gradientMove {
+
+            0% {
+                background-position:
+                    0% 50%;
+            }
+
+            50% {
+                background-position:
+                    100% 50%;
+            }
+
+            100% {
+                background-position:
+                    0% 50%;
+            }
+        }
+
+        @keyframes floatUp {
+
+            from {
+                transform:
+                    translateY(100vh);
+            }
+
+            to {
+                transform:
+                    translateY(-120vh);
+            }
+        }
+    </style>
 </head>
 
 <body>
+    <div class="heart h1">❤️</div>
+    <div class="heart h2">❤️</div>
+    <div class="heart h3">❤️</div>
+    <div class="container">
+        <h1 class="title">🔮 Want To See My Past, Present & Future?</h1>
+        <div class="subtitle">Scratch the card and find out...</div>
+        <div id="stats" class="stats">Clicks: 0 | Scratches: 0</div>
+        <div class="progress">
+            <div id="bar" class="bar"></div>
+        </div>
+        <div class="card" id="card">
+            <div class="reveal">
 
-<div class="card" id="card">
+                <div class="sparkles"></div>
 
-    <h1>🥺 Sorry</h1>
+                <div class="image-wrapper">
 
-    <div class="message" id="typing"></div>
+                    <span class="mini-heart heart-a">❤️</span>
+                    <span class="mini-heart heart-b">❤️</span>
+                    <span class="mini-heart heart-c">❤️</span>
 
-    <div class="buttons">
-        <button id="forgiveBtn">🥰 Forgive Me</button>
-        <button id="noBtn">😤 I Will Not Forgive</button>
+                    <img id="finalImage" src="girl1.png">
+
+                </div>
+
+                <h2 class="love-title">
+                    🎉 IT'S HER ❤️
+                </h2>
+
+                <p class="love-text">
+                    Past ➜ Her ❤️ <br>
+                    Present ➜ Her ❤️ <br>
+                    Future ➜ Her ❤️
+                </p>
+
+            </div>
+            <canvas id="canvas"></canvas>
+        </div>
     </div>
 
-</div>
+    <script>
+        const FIRST_IMAGE = "girl1.png";
+        const SECOND_IMAGE = "girl2.png";
+        const FINAL_IMAGE = "her.jpg";
 
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+        const card = document.getElementById("card");
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d", { willReadFrequently: true });
 
-<script>
+        let stage = 1, done = false, scratching = false, locked = false;
+        let clicks = 0, scratches = 0, scratchCount = 0;
+        let lastCheck = 0;
 
-// Typewriter
+        const MOBILE = window.innerWidth < 768;
+        const RADIUS = MOBILE ? 18 : 28;
+        const MIN_SCRATCH = MOBILE ? 120 : 80;
 
-const text =
-"I know I made a mistake. I truly regret it and I hope you can find it in your heart to forgive me. ❤️";
+        function sizeCanvas() {
+            canvas.width = card.clientWidth;
+            canvas.height = card.clientHeight;
+            draw(stage === 1 ? "Scratch Me ✨" : stage === 2 ? "Scratch Again ✨" : "Final Attempt 🔥");
+        }
+        function draw(text) {
+            ctx.globalCompositeOperation = "source-over";
+            const g = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            g.addColorStop(0, "#FFD700"); g.addColorStop(.5, "#F4C430"); g.addColorStop(1, "#B8860B");
+            ctx.fillStyle = g; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#fff"; ctx.textAlign = "center"; ctx.font = "bold 32px Arial";
+            ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+        }
+        sizeCanvas();
+        window.addEventListener("resize", () => location.reload());
 
-let i=0;
+        function progress() {
+            const p = Math.min(scratchCount / MIN_SCRATCH, 1);
+            document.getElementById("bar").style.width = (p * 100) + "%";
+            document.getElementById("stats").textContent = `Clicks: ${clicks} | Scratches: ${scratches}`;
+        }
 
-function typeWriter(){
-    if(i<text.length){
-        document.getElementById("typing").innerHTML += text.charAt(i);
-        i++;
-        setTimeout(typeWriter,40);
-    }
-}
+        function revealedPercent() {
+            const d = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+            let t = 0;
+            for (let i = 3; i < d.length; i += 4) if (d[i] === 0) t++;
+            return t / (d.length / 4);
+        }
 
-typeWriter();
+        function scratch(x, y) {
+            ctx.globalCompositeOperation = "destination-out";
+            ctx.beginPath(); ctx.arc(x, y, RADIUS, 0, Math.PI * 2); ctx.fill();
+            scratches++; scratchCount++; progress();
 
+            if (Math.random() < 0.01) {
+                confetti({ particleCount: 2, spread: 25, origin: { x: x / canvas.width, y: y / canvas.height } });
+            }
 
-// Floating hearts
+            const now = Date.now();
+            if (now - lastCheck > 250) {
+                lastCheck = now;
+                checkReveal();
+            }
+        }
 
-for(let i=0;i<35;i++){
+        function showSequence(title, img, next) {
+            locked = true;
+            canvas.style.display = "none";
+            const o = document.createElement("div");
+            o.className = "overlay";
+            o.innerHTML = `<h2>${title}</h2><img src="${img}"><p style="margin-top:10px">Hmm... not this one 🤔</p>`;
+            card.appendChild(o);
 
-    let heart=document.createElement("div");
+            if (navigator.vibrate) navigator.vibrate(100);
 
-    heart.className="heart";
-    heart.innerHTML="❤️";
+            setTimeout(() => {
+                o.remove();
+                canvas.style.display = "block";
+                scratchCount = 0;
+                document.getElementById("bar").style.width = "0%";
+                draw(next);
+                locked = false;
+            }, 2200);
+        }
 
-    heart.style.left=Math.random()*100+"vw";
-    heart.style.fontSize=(15+Math.random()*20)+"px";
-    heart.style.animationDuration=(5+Math.random()*8)+"s";
-    heart.style.animationDelay=Math.random()*5+"s";
+        function finalReveal() {
+            canvas.style.display = "none";
+            const match = 95 + Math.floor(Math.random() * 5);
 
-    document.body.appendChild(heart);
-}
+            const o = document.createElement("div");
+            o.className = "overlay";
+            o.innerHTML = `<h2>❤️ Soulmate Found ❤️</h2><h1>${match}%</h1><p>Perfect Match</p>`;
+            card.appendChild(o);
 
+            if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
 
-// Escaping No button
+            setTimeout(() => {
+                o.remove();
+                document.getElementById("finalImage").src = FINAL_IMAGE;
+                confetti({ particleCount: 300, spread: 180 });
+                setTimeout(() => confetti({ particleCount: 400, spread: 220 }), 400);
+            }, 2500);
+        }
 
-const noBtn=document.getElementById("noBtn");
+        function checkReveal() {
+            if (done || locked || scratchCount < MIN_SCRATCH) return;
+            if (revealedPercent() < 0.50) return;
 
-const messages=[
-"🥺 Please forgive",
-"❤️ Pretty please",
-"😭 One more chance",
-"🌹 Flowers for you",
-"🥹 I'm really sorry",
-"💖 Pleaseeeee",
-"😇 I promise",
-"🥺 Forgive me?"
-];
+            if (stage === 1) { stage = 2; showSequence("❌ Not Her", FIRST_IMAGE, "Scratch Again ✨"); }
+            else if (stage === 2) { stage = 3; showSequence("❌ Still Not Her", SECOND_IMAGE, "Final Attempt 🔥"); }
+            else { done = true; finalReveal(); }
+        }
 
-let index=0;
+        canvas.addEventListener("mousedown", () => { scratching = true; clicks++; progress(); });
+        canvas.addEventListener("mouseup", () => scratching = false);
+        canvas.addEventListener("mouseleave", () => scratching = false);
+        canvas.addEventListener("mousemove", e => {
+            if (!scratching) return;
+            const r = canvas.getBoundingClientRect();
+            scratch(e.clientX - r.left, e.clientY - r.top);
+        });
 
-function moveButton(){
-
-    const maxX=window.innerWidth-220;
-    const maxY=window.innerHeight-100;
-
-    noBtn.style.position="fixed";
-    noBtn.style.left=Math.random()*maxX+"px";
-    noBtn.style.top=Math.random()*maxY+"px";
-
-    noBtn.innerHTML=messages[index];
-
-    index++;
-
-    if(index>=messages.length){
-        index=0;
-    }
-}
-
-noBtn.addEventListener("mouseover",moveButton);
-noBtn.addEventListener("click",moveButton);
-
-
-// Forgive button
-
-document.getElementById("forgiveBtn")
-.addEventListener("click",()=>{
-
-    confetti({
-        particleCount:100,
-        spread:70,
-        origin:{y:0.7}
-    });
-
-    document.getElementById("card").innerHTML=`
-
-        <div class="fade">
-
-            <div class="bigHeart">❤️</div>
-
-            <h1 style="font-size:3rem;margin-top:10px;">
-                Thank You
-            </h1>
-
-            <p style="
-                color:white;
-                margin-top:20px;
-                line-height:1.8;
-                font-size:1.2rem;
-            ">
-                Your forgiveness means a lot to me.
-                <br>
-                Thank you for giving me another chance.
-            </p>
-
-            <div style="
-                font-size:45px;
-                margin-top:25px;
-            ">
-                🥰 🌹 💖
-            </div>
-
-        </div>
-
-    `;
-});
-
-</script>
-
+        canvas.addEventListener("touchstart", e => { e.preventDefault(); scratching = true; clicks++; progress(); }, { passive: false });
+        canvas.addEventListener("touchend", () => scratching = false, { passive: false });
+        canvas.addEventListener("touchmove", e => {
+            e.preventDefault();
+            if (!scratching) return;
+            const r = canvas.getBoundingClientRect();
+            const t = e.touches[0];
+            scratch(t.clientX - r.left, t.clientY - r.top);
+        }, { passive: false });
+    </script>
 </body>
-</html>
 
+</html>
