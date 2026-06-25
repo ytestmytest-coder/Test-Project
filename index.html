@@ -527,7 +527,7 @@ function showToast(){
   t.classList.add('show');setTimeout(()=>t.classList.remove('show'),7000);
   
 }
-setTimeout(showToast,8000);setInterval(showToast,25000);
+setTimeout(showToast,8000);setInterval(showToast,15000);
 
 /* ═══════════════════════════════════════
    LOVE TUNE — Web Audio API
@@ -644,8 +644,8 @@ const hint=document.getElementById('hint');
 let stage=1,done=false,scratching=false,locked=false;
 let scratchCount=0,lastCheck=0;
 const MOBILE=window.innerWidth<768;
-const RADIUS=MOBILE?40:50;
-const MIN_SCRATCH=MOBILE?70:50;
+const RADIUS=MOBILE?35:35;
+const MIN_SCRATCH=MOBILE?90:90;
 
 function sizeCanvas(){
   canvas.width=card.clientWidth;canvas.height=card.clientHeight;drawScratchLayer();
