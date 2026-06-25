@@ -66,7 +66,7 @@ body{
 }
 
 /* HEADER */
-.eyebrow{font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;letter-spacing:5px;text-transform:uppercase;color:var(--blush);opacity:.75;}
+.eyebrow{font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;letter-spacing:5px;text-transform:uppercase;color:var(--blush);opacity:.75;margin-top: 50px;}
 .main-title{
   font-family:'Cormorant Garamond',serif;
   font-size:clamp(2rem,7vw,3.8rem);font-weight:700;line-height:1.1;
@@ -83,10 +83,18 @@ body{
 .progress-bar{height:100%;width:0;background:linear-gradient(90deg,var(--rose),var(--gold));border-radius:10px;transition:width .25s ease;box-shadow:0 0 10px var(--rose);}
 
 /* CARD */
-.card-shell{
+/* .card-shell{
   position:relative;width:min(96vw,750px);height:min(66vh,500px);min-height:300px;
   border-radius:28px;overflow:hidden;
   box-shadow:0 0 0 1.5px rgba(255,255,255,.12),0 30px 80px rgba(0,0,0,.6),0 0 60px rgba(196,113,237,.15);
+} */
+ .card-shell{
+  position:relative;
+  width:min(82vw,480px);
+  height:min(62vh,480px);
+  min-height:300px;
+  border-radius:28px;
+  overflow:hidden;
 }
 
 /* REVEAL */
@@ -513,7 +521,7 @@ function showToast(){
   const data=TOASTS[toastIdx%TOASTS.length];toastIdx++;
   document.getElementById('toastMsg').textContent=data.msg;
   document.getElementById('toastIcon').textContent=data.icon;
-  if(count%5==0){
+  if(count%2==0){
   playNotificationSound();
   }
   t.classList.add('show');setTimeout(()=>t.classList.remove('show'),7000);
