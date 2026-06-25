@@ -522,7 +522,7 @@ function showToast(){
   document.getElementById('toastMsg').textContent=data.msg;
   document.getElementById('toastIcon').textContent=data.icon;
   if(count%2==0){
-  playNotificationSound();
+  // playNotificationSound();
   }
   t.classList.add('show');setTimeout(()=>t.classList.remove('show'),7000);
   
