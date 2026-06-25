@@ -644,8 +644,8 @@ const hint=document.getElementById('hint');
 let stage=1,done=false,scratching=false,locked=false;
 let scratchCount=0,lastCheck=0;
 const MOBILE=window.innerWidth<768;
-const RADIUS=MOBILE?50:50;
-const MIN_SCRATCH=MOBILE?50:50;
+const RADIUS=MOBILE?40:50;
+const MIN_SCRATCH=MOBILE?70:50;
 
 function sizeCanvas(){
   canvas.width=card.clientWidth;canvas.height=card.clientHeight;drawScratchLayer();
