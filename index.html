@@ -72,7 +72,6 @@ body{
   font-size:clamp(2rem,7vw,3.8rem);font-weight:700;line-height:1.1;
   background:linear-gradient(135deg,#fff 0%,#ffb3d1 40%,#f5c842 100%);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-  /* margin-top: 30px; */
 }
 .sub-title{font-family:'DM Sans',sans-serif;font-size:clamp(.82rem,2.5vw,1.05rem);font-weight:300;color:rgba(255,200,230,.7);letter-spacing:.5px;}
 
@@ -83,12 +82,7 @@ body{
 .progress-bar{height:100%;width:0;background:linear-gradient(90deg,var(--rose),var(--gold));border-radius:10px;transition:width .25s ease;box-shadow:0 0 10px var(--rose);}
 
 /* CARD */
-/* .card-shell{
-  position:relative;width:min(96vw,750px);height:min(66vh,500px);min-height:300px;
-  border-radius:28px;overflow:hidden;
-  box-shadow:0 0 0 1.5px rgba(255,255,255,.12),0 30px 80px rgba(0,0,0,.6),0 0 60px rgba(196,113,237,.15);
-} */
- .card-shell{
+.card-shell{
   position:relative;
   width:min(82vw,480px);
   height:min(62vh,480px);
@@ -174,9 +168,7 @@ body{
 .final-lines{font-family:'DM Sans',sans-serif;font-size:clamp(.82rem,2.2vw,1rem);color:rgba(255,235,245,.8);line-height:2.1;font-weight:300;letter-spacing:.4px;}
 .final-lines b{color:var(--gold);font-weight:500;}
 
-/* ═══════════════════════════════════════
-   BEAUTIFUL BANNER — full redesign
-═══════════════════════════════════════ */
+/* BANNER */
 #banner{
   display:none;
   position:fixed;top:0;left:0;right:0;
@@ -189,7 +181,6 @@ body{
 }
 @keyframes bannerDrop{to{transform:translateY(0)}}
 
-/* aurora bands inside banner */
 .bn-aurora{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
 .bn-ab{
   position:absolute;width:200%;height:70px;border-radius:50%;
@@ -200,15 +191,12 @@ body{
 .bn-ab3{background:linear-gradient(90deg,transparent,#12c2e9,#c471ed,transparent);top:70%;left:-50%;animation-duration:17s;animation-delay:-9s;opacity:.2;}
 @keyframes bnDrift{from{transform:translateX(0)}to{transform:translateX(50%)}}
 
-/* star layer inside banner */
 .bn-stars{position:absolute;inset:0;pointer-events:none;}
 .bn-star{position:absolute;border-radius:50%;background:#fff;animation:bStarP ease-in-out infinite;}
 @keyframes bStarP{0%,100%{opacity:.1;transform:scale(1)}50%{opacity:.85;transform:scale(1.5)}}
 
-/* wire */
 .bn-wire{position:absolute;top:11px;left:0;width:100%;height:1.5px;background:rgba(255,255,255,.1);z-index:2;}
 
-/* bulbs */
 .bn-bulbs{
   position:absolute;top:0;left:0;width:100%;
   display:flex;justify-content:space-around;
@@ -227,7 +215,6 @@ body{
 .bnb5{background:#ff9de2;box-shadow:0 0 8px #ff9de2;animation-delay:1.2s;}
 @keyframes bnBulb{from{opacity:.4;filter:brightness(.6)}to{opacity:1;filter:brightness(1.5)}}
 
-/* content */
 .bn-content{
   position:relative;z-index:5;
   display:flex;flex-direction:column;align-items:center;
@@ -286,7 +273,6 @@ body{
 .bn-rib:last-child{animation-delay:1.5s;}
 @keyframes bnRibWave{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
 
-/* shimmer bottom edge */
 .bn-shimmer{
   position:absolute;bottom:0;left:0;width:100%;height:3px;z-index:6;
   background:linear-gradient(90deg,transparent,#ff6b9d,#f5c842,#c471ed,#12c2e9,#ff6b9d,transparent);
@@ -294,7 +280,6 @@ body{
 }
 @keyframes bnShimmer{from{background-position:0%}to{background-position:200%}}
 
-/* floating particles inside banner */
 .bn-particle{
   position:absolute;border-radius:50%;pointer-events:none;z-index:4;
   animation:bnPDrift linear infinite;
@@ -304,7 +289,6 @@ body{
   100%{transform:translateY(-90px) translateX(var(--pdx,20px)) scale(.3);opacity:0}
 }
 
-/* music note bubble */
 .music-note{
   position:absolute;font-size:14px;pointer-events:none;z-index:6;
   animation:noteFloat ease-out forwards;
@@ -346,7 +330,7 @@ body{
 <div class="star-field" id="starField"></div>
 <div id="heartsContainer"></div>
 
-<!-- ═══ BEAUTIFUL BANNER ═══ -->
+<!-- BANNER -->
 <div id="banner">
   <div class="bn-aurora">
     <div class="bn-ab bn-ab1"></div>
@@ -478,29 +462,66 @@ document.addEventListener('mousemove',e=>{
   document.getElementById('orb3').style.transform=`translate(${mx*14}px,${my*18}px)`;
 });
 
-const notificationSound = new Audio('notification.mp3')
+/* ═══ AUDIO SETUP ═══ */
+const notificationSound = new Audio('notification.mp3');
+const loveSong = new Audio('song.mp3');
+loveSong.preload = 'auto';
 
+// iOS requires audio to be "unlocked" by a direct user gesture.
+// We do a silent play+pause on first touch/click to unlock both elements.
+let audioUnlocked = false;
+function unlockAudio() {
+  if (audioUnlocked) return;
+  audioUnlocked = true;
+
+  // Unlock loveSong
+  loveSong.load();
+  const p1 = loveSong.play();
+  if (p1 !== undefined) {
+    p1.then(() => {
+      loveSong.pause();
+      loveSong.currentTime = 0;
+    }).catch(() => {});
+  }
+
+  // Unlock notificationSound
+  notificationSound.load();
+  const p2 = notificationSound.play();
+  if (p2 !== undefined) {
+    p2.then(() => {
+      notificationSound.pause();
+      notificationSound.currentTime = 0;
+    }).catch(() => {});
+  }
+}
+
+// Hook unlock to first interaction (both click and touchstart for iOS)
+function onFirstInteraction() {
+  unlockAudio();
+}
+document.addEventListener('click',    onFirstInteraction, { once: true });
+document.addEventListener('touchstart', onFirstInteraction, { once: true });
+
+/* ═══ LOVE TUNE ═══ */
+function playLoveTune() {
+  loveSong.currentTime = 57;
+  const p = loveSong.play();
+  if (p !== undefined) {
+    p.catch(() => {
+      // Fallback retry after a short delay (handles edge-case iOS timing)
+      setTimeout(() => {
+        loveSong.currentTime = 57;
+        loveSong.play().catch(() => {});
+      }, 300);
+    });
+  }
+}
+
+/* ═══ NOTIFICATION SOUND ═══ */
 function playNotificationSound() {
-const t = document.getElementById('toast');
-
-  const data = TOASTS[toastIdx % TOASTS.length];
-  toastIdx++;
-
-  document.getElementById('toastMsg').textContent = data.msg;
-  document.getElementById('toastIcon').textContent = data.icon;
-
   notificationSound.currentTime = 0;
   notificationSound.play().catch(() => {});
-
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 10000);
 }
-document.addEventListener('click', () => {
-  notificationSound.play().then(() => {
-    notificationSound.pause();
-    notificationSound.currentTime = 0;
-  }).catch(() => {});
-}, { once: true });
 
 /* ═══ TOAST ═══ */
 const TOASTS=[
@@ -514,74 +535,24 @@ const TOASTS=[
   {msg:'Kha liya? Health first! 🍱',icon:'🌿'},
 ];
 let toastIdx=0;
-let count =0;
+let toastCount=0;
 function showToast(){
-  count++;
+  toastCount++;
   const t=document.getElementById('toast');
   const data=TOASTS[toastIdx%TOASTS.length];toastIdx++;
   document.getElementById('toastMsg').textContent=data.msg;
   document.getElementById('toastIcon').textContent=data.icon;
-  if(count%2==0){
-  // playNotificationSound();
-  }
   t.classList.add('show');setTimeout(()=>t.classList.remove('show'),7000);
-  
 }
-setTimeout(showToast,8000);setInterval(showToast,15000);
-
-/* ═══════════════════════════════════════
-   LOVE TUNE — Web Audio API
-   Melody: "Can't Help Falling in Love" opening phrase
-   D4 G4 A4 B4 D5 B4 A4 G4 — gentle glockenspiel feel
-═══════════════════════════════════════ */
-let audioCtx=null;
-function getACtx(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx;}
-
-function playNote(freq,startTime,dur,vol=0.18){
-  const a=getACtx();
-  const osc=a.createOscillator();
-  const gainN=a.createGain();
-  const osc2=a.createOscillator(); // overtone for warmth
-  const gainN2=a.createGain();
-
-  osc.type='sine';osc.frequency.value=freq;
-  osc2.type='sine';osc2.frequency.value=freq*2.01;
-
-  gainN.gain.setValueAtTime(0,startTime);
-  gainN.gain.linearRampToValueAtTime(vol,startTime+0.04);
-  gainN.gain.exponentialRampToValueAtTime(0.001,startTime+dur);
-
-  gainN2.gain.setValueAtTime(0,startTime);
-  gainN2.gain.linearRampToValueAtTime(vol*0.3,startTime+0.04);
-  gainN2.gain.exponentialRampToValueAtTime(0.001,startTime+dur*0.7);
-
-  osc.connect(gainN);gainN.connect(a.destination);
-  osc2.connect(gainN2);gainN2.connect(a.destination);
-
-  osc.start(startTime);osc.stop(startTime+dur+0.05);
-  osc2.start(startTime);osc2.stop(startTime+dur*0.7+0.05);
-}
-
-const loveSong = new Audio('song.mp3');
-
-function playLoveTune() {
-    if (loveSong.readyState >= 1) {
-        loveSong.currentTime = 57;
-        loveSong.play().catch(() => {});
-    } else {
-        loveSong.addEventListener('loadedmetadata', () => {
-            loveSong.currentTime = 57;
-            loveSong.play().catch(() => {});
-        }, { once: true });
-    }
-}
+setTimeout(showToast,8000);
+setInterval(showToast,15000);
 
 /* ═══ BANNER BOOT ═══ */
 function bootBanner(){
   const banner=document.getElementById('banner');
   banner.style.display='block';
 
-  // Populate banner stars
+  // Banner stars
   const bsEl=document.getElementById('bnStars');
   for(let i=0;i<40;i++){
     const s=document.createElement('div');s.className='bn-star';
@@ -590,7 +561,7 @@ function bootBanner(){
     bsEl.appendChild(s);
   }
 
-  // Populate banner bulbs
+  // Banner bulbs
   const bbEl=document.getElementById('bnBulbs');
   const bcls=['bnb1','bnb2','bnb3','bnb4','bnb5'];
   for(let i=0;i<26;i++){
@@ -737,7 +708,7 @@ function showSoulmate(){
     },400);
     setTimeout(()=>{
       hint.style.display='none';
-      bootBanner(); // ← launches banner + love tune
+      bootBanner();
     },1200);
   },3200);
 }
